@@ -20,8 +20,31 @@ app.get("/", function (req, res) {
 
 
 // your first API endpoint... 
-app.get("/api/hello", function (req, res) {
-  res.json({greeting: 'hello API'});
+app.get('/api/:date?', (req, res) => {
+  let dateObject;
+
+  if (!req.params.date) {
+      // Si no se proporciona una fecha, utilizar la fecha y hora actuales
+      dateObject = new Date();
+  } else {
+      const dateParam = isNaN(req.params.date) ? req.params.date : parseInt(req.params.date);
+      // Si se proporciona una fecha, intentar analizarla
+      dateObject = new Date(dateParam);
+  }
+
+  // Verificar si la fecha es válida
+  if (isNaN(dateObject.getTime())) {
+      return res.status(400).json({ error: 'Invalid date' });
+  }
+
+  // Construir el objeto de respuesta
+  const response = {
+      unix: dateObject.getTime(),
+      utc: dateObject.toUTCString()
+  };
+  
+  // Enviar la respuesta
+  res.json(response);
 });
 
 
